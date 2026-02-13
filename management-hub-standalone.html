@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Management Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 24px;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 12px;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .input-group {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+            background: #5568d3;
+        }
+        
+        .btn-small {
+            width: auto;
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+        }
+        
+        .btn-warning {
+            background: #ed8936;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            flex: 1;
+        }
+        
+        .card-body {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .habit-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .habit-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .habit-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .habit-streak {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        
+        .habit-days {
+            display: flex;
+            gap: 6px;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .day-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+        }
+        
+        .day-dot:active {
+            transform: scale(0.95);
+        }
+        
+        .day-dot.completed {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+        
+        .day-dot.today {
+            border: 3px solid #667eea;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            padding: 8px 0 20px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            color: #718096;
+            font-size: 11px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .nav-item.active {
+            color: #667eea;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 10000;
+            display: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        
+        .badge-high { background: #fed7d7; color: #c53030; }
+        .badge-medium { background: #feebc8; color: #c05621; }
+        .badge-low { background: #c6f6d5; color: #22543d; }
+        .badge-overdue { background: #fc8181; color: white; }
+        .badge-done { background: #9ae6b4; color: #22543d; }
+        
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Management Hub</h1>
+        <p>Personal & Business Command Center</p>
+    </div>
+    
+    <!-- Dashboard -->
+    <div id="dashboard" class="tab-content active">
+        <div class="section-title">📊 Your Overview</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="stat-habits">0</div>
+                <div class="stat-label">Habits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-clients">0</div>
+                <div class="stat-label">Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-tasks">0</div>
+                <div class="stat-label">Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-overdue">0</div>
+                <div class="stat-label">Overdue</div>
+            </div>
+        </div>
+        <div class="section-title">🚨 Today's Priorities</div>
+        <div id="today-overview"></div>
+    </div>
+    
+    <!-- Habits -->
+    <div id="habits" class="tab-content">
+        <div class="section-title">✨ Habit Tracker</div>
+        <div class="input-group">
+            <input type="text" id="habit-name" placeholder="Habit name (e.g., Morning workout)">
+            <input type="time" id="habit-time">
+            <button onclick="app.addHabit()">Add Habit</button>
+        </div>
+        <div id="habits-list"></div>
+    </div>
+    
+    <!-- Clients -->
+    <div id="clients" class="tab-content">
+        <div class="section-title">👥 Clients</div>
+        <div class="input-group">
+            <input type="text" id="client-name" placeholder="Client name">
+            <input type="text" id="client-company" placeholder="Company">
+            <input type="text" id="client-email" placeholder="Email">
+            <input type="text" id="client-phone" placeholder="Phone">
+            <button onclick="app.addClient()">Add Client</button>
+        </div>
+        <div id="clients-list"></div>
+    </div>
+    
+    <!-- Tasks -->
+    <div id="tasks" class="tab-content">
+        <div class="section-title">📋 Tasks</div>
+        <div class="input-group">
+            <input type="text" id="task-title" placeholder="Task title">
+            <select id="task-client">
+                <option value="">Select client (optional)</option>
+            </select>
+            <input type="date" id="task-deadline">
+            <select id="task-priority">
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+            </select>
+            <button onclick="app.addTask()">Add Task</button>
+        </div>
+        <div class="filter-bar">
+            <button class="btn-small" onclick="app.filterTasks('all')">All</button>
+            <button class="btn-small" onclick="app.filterTasks('today')">Today</button>
+            <button class="btn-small" onclick="app.filterTasks('overdue')">Overdue</button>
+            <button class="btn-small btn-success" onclick="app.filterTasks('done')">Done</button>
+        </div>
+        <div id="tasks-list"></div>
+    </div>
+    
+    <!-- Reminders -->
+    <div id="reminders" class="tab-content">
+        <div class="section-title">🔔 Reminders</div>
+        <div class="card">
+            <div class="card-title">Enable Notifications</div>
+            <div class="card-body">
+                <p style="margin-bottom: 10px;">Get reminders for your habits and tasks.</p>
+                <button onclick="app.enableNotifications()">🔔 Enable</button>
+            </div>
+        </div>
+        <div id="reminders-list"></div>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="app.switchTab('dashboard')">
+            <div class="nav-icon">📊</div>
+            <div>Dashboard</div>
+        </button>
+        <button class="nav-item" onclick="app.switchTab('habits')">
+            <div class="nav-icon">✨</div>
+            <div>Habits</div>
+        </button>
+        <button class="nav-item" onclick="app.switchTab('clients')">
+            <div class="nav-icon">👥</div>
+            <div>Clients</div>
+        </button>
+        <button class="nav-item" onclick="app.switchTab('tasks')">
+            <div class="nav-icon">📋</div>
+            <div>Tasks</div>
+        </button>
+        <button class="nav-item" onclick="app.switchTab('reminders')">
+            <div class="nav-icon">🔔</div>
+            <div>Alerts</div>
+        </button>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+    
+    <script>
+        // Main App Object
+        var app = {
+            habits: [],
+            clients: [],
+            tasks: [],
+            currentFilter: 'all',
+            
+            init: function() {
+                this.loadData();
+                this.render();
+                console.log('App initialized!');
+            },
+            
+            loadData: function() {
+                try {
+                    var h = localStorage.getItem('habits');
+                    if (h) this.habits = JSON.parse(h);
+                    
+                    var c = localStorage.getItem('clients');
+                    if (c) this.clients = JSON.parse(c);
+                    
+                    var t = localStorage.getItem('tasks');
+                    if (t) this.tasks = JSON.parse(t);
+                } catch(e) {
+                    console.log('First load');
+                }
+            },
+            
+            saveData: function() {
+                try {
+                    localStorage.setItem('habits', JSON.stringify(this.habits));
+                    localStorage.setItem('clients', JSON.stringify(this.clients));
+                    localStorage.setItem('tasks', JSON.stringify(this.tasks));
+                } catch(e) {
+                    this.showToast('Error saving');
+                }
+            },
+            
+            switchTab: function(tabName) {
+                var tabs = document.querySelectorAll('.tab-content');
+                for (var i = 0; i < tabs.length; i++) {
+                    tabs[i].classList.remove('active');
+                }
+                
+                var navItems = document.querySelectorAll('.nav-item');
+                for (var i = 0; i < navItems.length; i++) {
+                    navItems[i].classList.remove('active');
+                }
+                
+                document.getElementById(tabName).classList.add('active');
+                
+                var btns = document.querySelectorAll('.nav-item');
+                for (var i = 0; i < btns.length; i++) {
+                    if (btns[i].textContent.toLowerCase().includes(tabName)) {
+                        btns[i].classList.add('active');
+                    }
+                }
+                
+                if (tabName === 'dashboard') this.updateDashboard();
+                window.scrollTo(0, 0);
+            },
+            
+            addHabit: function() {
+                var name = document.getElementById('habit-name').value.trim();
+                var time = document.getElementById('habit-time').value;
+                
+                if (!name) {
+                    this.showToast('Enter habit name');
+                    return;
+                }
+                
+                this.habits.push({
+                    id: Date.now(),
+                    name: name,
+                    time: time,
+                    completions: {},
+                    streak: 0
+                });
+                
+                document.getElementById('habit-name').value = '';
+                document.getElementById('habit-time').value = '';
+                
+                this.saveData();
+                this.renderHabits();
+                this.showToast('✨ Habit added!');
+            },
+            
+            toggleHabit: function(id, date) {
+                var habit = this.habits.find(function(h) { return h.id === id; });
+                if (!habit) return;
+                
+                if (habit.completions[date]) {
+                    delete habit.completions[date];
+                } else {
+                    habit.completions[date] = true;
+                }
+                
+                this.calculateStreak(habit);
+                this.saveData();
+                this.renderHabits();
+            },
+            
+            calculateStreak: function(habit) {
+                var streak = 0;
+                var date = new Date();
+                date.setHours(0, 0, 0, 0);
+                
+                while (true) {
+                    var dateStr = date.toISOString().split('T')[0];
+                    if (habit.completions[dateStr]) {
+                        streak++;
+                        date.setDate(date.getDate() - 1);
+                    } else {
+                        break;
+                    }
+                }
+                
+                habit.streak = streak;
+            },
+            
+            deleteHabit: function(id) {
+                if (!confirm('Delete habit?')) return;
+                this.habits = this.habits.filter(function(h) { return h.id !== id; });
+                this.saveData();
+                this.renderHabits();
+            },
+            
+            renderHabits: function() {
+                var container = document.getElementById('habits-list');
+                
+                if (this.habits.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-icon">✨</div><p>No habits yet!</p></div>';
+                    return;
+                }
+                
+                var today = new Date();
+                var html = '';
+                
+                for (var i = 0; i < this.habits.length; i++) {
+                    var habit = this.habits[i];
+                    this.calculateStreak(habit);
+                    
+                    html += '<div class="habit-card">';
+                    html += '<div class="habit-header">';
+                    html += '<div class="habit-name">' + habit.name + '</div>';
+                    html += '<div class="habit-streak">🔥 ' + habit.streak + '</div>';
+                    html += '</div>';
+                    html += '<div class="habit-days">';
+                    
+                    for (var j = 6; j >= 0; j--) {
+                        var d = new Date(today);
+                        d.setDate(d.getDate() - j);
+                        var dateStr = d.toISOString().split('T')[0];
+                        var isToday = dateStr === today.toISOString().split('T')[0];
+                        var isCompleted = habit.completions[dateStr];
+                        var dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0);
+                        
+                        html += '<div class="day-dot ' + (isCompleted ? 'completed' : '') + ' ' + (isToday ? 'today' : '') + '" ';
+                        html += 'onclick="app.toggleHabit(' + habit.id + ', \'' + dateStr + '\')">';
+                        html += dayName + '</div>';
+                    }
+                    
+                    html += '</div>';
+                    html += '<div style="display:flex;justify-content:space-between;font-size:12px;color:#718096">';
+                    html += '<span>⏰ ' + (habit.time || 'No time') + '</span>';
+                    html += '<button class="btn-small btn-danger" onclick="app.deleteHabit(' + habit.id + ')">Delete</button>';
+                    html += '</div></div>';
+                }
+                
+                container.innerHTML = html;
+            },
+            
+            addClient: function() {
+                var name = document.getElementById('client-name').value.trim();
+                var company = document.getElementById('client-company').value.trim();
+                var email = document.getElementById('client-email').value.trim();
+                var phone = document.getElementById('client-phone').value.trim();
+                
+                if (!name) {
+                    this.showToast('Enter client name');
+                    return;
+                }
+                
+                this.clients.push({
+                    id: Date.now(),
+                    name: name,
+                    company: company,
+                    email: email,
+                    phone: phone
+                });
+                
+                document.getElementById('client-name').value = '';
+                document.getElementById('client-company').value = '';
+                document.getElementById('client-email').value = '';
+                document.getElementById('client-phone').value = '';
+                
+                this.saveData();
+                this.renderClients();
+                this.updateClientDropdown();
+                this.showToast('👥 Client added!');
+            },
+            
+            deleteClient: function(id) {
+                if (!confirm('Delete client?')) return;
+                this.clients = this.clients.filter(function(c) { return c.id !== id; });
+                this.saveData();
+                this.renderClients();
+                this.updateClientDropdown();
+            },
+            
+            renderClients: function() {
+                var container = document.getElementById('clients-list');
+                
+                if (this.clients.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><p>No clients yet!</p></div>';
+                    return;
+                }
+                
+                var html = '';
+                for (var i = 0; i < this.clients.length; i++) {
+                    var c = this.clients[i];
+                    var taskCount = this.tasks.filter(function(t) { return t.clientId === c.id && !t.completed; }).length;
+                    
+                    html += '<div class="card">';
+                    html += '<div class="card-header">';
+                    html += '<div><div class="card-title">' + c.name + '</div>';
+                    if (c.company) html += '<div style="color:#718096;font-size:13px">' + c.company + '</div>';
+                    html += '</div>';
+                    html += '<button class="btn-small btn-danger" onclick="app.deleteClient(' + c.id + ')">Delete</button>';
+                    html += '</div>';
+                    html += '<div class="card-body">';
+                    if (c.email) html += '📧 ' + c.email + '<br>';
+                    if (c.phone) html += '📱 ' + c.phone + '<br>';
+                    html += '<strong>' + taskCount + '</strong> active tasks';
+                    html += '</div></div>';
+                }
+                
+                container.innerHTML = html;
+            },
+            
+            updateClientDropdown: function() {
+                var select = document.getElementById('task-client');
+                var html = '<option value="">Select client (optional)</option>';
+                
+                for (var i = 0; i < this.clients.length; i++) {
+                    var c = this.clients[i];
+                    html += '<option value="' + c.id + '">' + c.name;
+                    if (c.company) html += ' - ' + c.company;
+                    html += '</option>';
+                }
+                
+                select.innerHTML = html;
+            },
+            
+            addTask: function() {
+                var title = document.getElementById('task-title').value.trim();
+                var clientId = document.getElementById('task-client').value;
+                var deadline = document.getElementById('task-deadline').value;
+                var priority = document.getElementById('task-priority').value;
+                
+                if (!title) {
+                    this.showToast('Enter task title');
+                    return;
+                }
+                if (!deadline) {
+                    this.showToast('Set deadline');
+                    return;
+                }
+                
+                this.tasks.push({
+                    id: Date.now(),
+                    title: title,
+                    clientId: clientId ? parseInt(clientId) : null,
+                    deadline: deadline,
+                    priority: priority,
+                    completed: false
+                });
+                
+                document.getElementById('task-title').value = '';
+                document.getElementById('task-deadline').value = '';
+                
+                this.saveData();
+                this.renderTasks();
+                this.showToast('📋 Task added!');
+            },
+            
+            toggleTask: function(id) {
+                var task = this.tasks.find(function(t) { return t.id === id; });
+                if (task) {
+                    task.completed = !task.completed;
+                    this.saveData();
+                    this.renderTasks();
+                    if (task.completed) this.showToast('✅ Done!');
+                }
+            },
+            
+            deleteTask: function(id) {
+                if (!confirm('Delete task?')) return;
+                this.tasks = this.tasks.filter(function(t) { return t.id !== id; });
+                this.saveData();
+                this.renderTasks();
+            },
+            
+            filterTasks: function(filter) {
+                this.currentFilter = filter;
+                this.renderTasks();
+            },
+            
+            renderTasks: function() {
+                var container = document.getElementById('tasks-list');
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+                var todayStr = today.toISOString().split('T')[0];
+                
+                var filtered = this.tasks.slice();
+                
+                if (this.currentFilter === 'today') {
+                    filtered = filtered.filter(function(t) { return t.deadline === todayStr && !t.completed; });
+                } else if (this.currentFilter === 'overdue') {
+                    filtered = filtered.filter(function(t) {
+                        var d = new Date(t.deadline);
+                        return d < today && !t.completed;
+                    });
+                } else if (this.currentFilter === 'done') {
+                    filtered = filtered.filter(function(t) { return t.completed; });
+                }
+                
+                if (filtered.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>No tasks!</p></div>';
+                    return;
+                }
+                
+                var html = '';
+                var self = this;
+                
+                for (var i = 0; i < filtered.length; i++) {
+                    var task = filtered[i];
+                    var client = this.clients.find(function(c) { return c.id === task.clientId; });
+                    var taskDate = new Date(task.deadline);
+                    var isOverdue = taskDate < today && !task.completed;
+                    
+                    html += '<div class="card" style="opacity:' + (task.completed ? '0.7' : '1') + '">';
+                    html += '<div class="card-header">';
+                    html += '<div class="card-title" style="' + (task.completed ? 'text-decoration:line-through' : '') + '">';
+                    html += task.title + '</div>';
+                    html += '<div style="display:flex;gap:6px">';
+                    html += '<button class="btn-small ' + (task.completed ? 'btn-warning' : 'btn-success') + '" ';
+                    html += 'onclick="app.toggleTask(' + task.id + ')">' + (task.completed ? 'Undo' : '✓') + '</button>';
+                    html += '<button class="btn-small btn-danger" onclick="app.deleteTask(' + task.id + ')">×</button>';
+                    html += '</div></div>';
+                    html += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:12px">';
+                    html += '<span class="badge badge-' + task.priority + '">' + task.priority.toUpperCase() + '</span>';
+                    if (isOverdue) html += '<span class="badge badge-overdue">⚠ Overdue</span>';
+                    if (task.completed) html += '<span class="badge badge-done">✓ Done</span>';
+                    if (client) html += '<div style="color:#667eea;margin-top:4px">👤 ' + client.name + '</div>';
+                    html += '<div style="margin-top:4px">📅 ' + new Date(task.deadline).toLocaleDateString() + '</div>';
+                    html += '</div></div>';
+                }
+                
+                container.innerHTML = html;
+            },
+            
+            updateDashboard: function() {
+                document.getElementById('stat-habits').textContent = this.habits.length;
+                document.getElementById('stat-clients').textContent = this.clients.length;
+                
+                var pending = this.tasks.filter(function(t) { return !t.completed; }).length;
+                document.getElementById('stat-tasks').textContent = pending;
+                
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+                var overdue = this.tasks.filter(function(t) {
+                    var d = new Date(t.deadline);
+                    return d < today && !t.completed;
+                }).length;
+                document.getElementById('stat-overdue').textContent = overdue;
+                
+                this.renderTodayOverview();
+            },
+            
+            renderTodayOverview: function() {
+                var container = document.getElementById('today-overview');
+                var today = new Date();
+                var todayStr = today.toISOString().split('T')[0];
+                
+                var todayHabits = this.habits.filter(function(h) { return !h.completions[todayStr]; });
+                var todayTasks = this.tasks.filter(function(t) { return t.deadline === todayStr && !t.completed; });
+                
+                var html = '';
+                
+                if (todayTasks.length > 0) {
+                    html += '<div class="card"><div class="card-title">📋 Due Today (' + todayTasks.length + ')</div>';
+                    html += '<div class="card-body">';
+                    for (var i = 0; i < todayTasks.length; i++) {
+                        html += '• ' + todayTasks[i].title + '<br>';
+                    }
+                    html += '</div></div>';
+                }
+                
+                if (todayHabits.length > 0) {
+                    html += '<div class="card"><div class="card-title">✨ Habits Left (' + todayHabits.length + ')</div>';
+                    html += '<div class="card-body">';
+                    for (var i = 0; i < todayHabits.length; i++) {
+                        html += '• ' + todayHabits[i].name + '<br>';
+                    }
+                    html += '</div></div>';
+                }
+                
+                if (html === '') {
+                    html = '<div class="empty-state"><div class="empty-icon">✅</div><p>All caught up!</p></div>';
+                }
+                
+                container.innerHTML = html;
+            },
+            
+            enableNotifications: function() {
+                if (!("Notification" in window)) {
+                    this.showToast('Not supported');
+                    return;
+                }
+                
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === "granted") {
+                        new Notification("🎯 Management Hub", {
+                            body: "Notifications enabled!"
+                        });
+                        app.showToast('🔔 Enabled!');
+                    }
+                });
+            },
+            
+            showToast: function(msg) {
+                var toast = document.getElementById('toast');
+                toast.textContent = msg;
+                toast.style.display = 'block';
+                setTimeout(function() {
+                    toast.style.display = 'none';
+                }, 2000);
+            },
+            
+            render: function() {
+                this.renderHabits();
+                this.renderClients();
+                this.renderTasks();
+                this.updateClientDropdown();
+                this.updateDashboard();
+            }
+        };
+        
+        // Initialize when page loads
+        window.onload = function() {
+            app.init();
+        };
+    </script>
+</body>
+</html>
