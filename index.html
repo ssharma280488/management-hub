@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Management Hub">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Self-Management Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 12px;
+        }
+        
+        .install-prompt {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 15px 20px;
+            margin: 15px;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .install-prompt.show {
+            display: flex;
+        }
+        
+        .install-prompt button {
+            background: white;
+            color: #38a169;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            padding: 10px;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            flex-shrink: 0;
+            padding: 12px 20px;
+            background: #f7fafc;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #718096;
+            white-space: nowrap;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        input[type="text"], input[type="date"], input[type="time"], select, textarea {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            width: 100%;
+        }
+        
+        input[type="text"]:focus, input[type="date"]:focus, input[type="time"]:focus, 
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        button {
+            padding: 14px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-small {
+            padding: 10px 16px;
+            font-size: 13px;
+            width: auto;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+        }
+        
+        .btn-warning {
+            background: #ed8936;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            flex: 1;
+            word-break: break-word;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .card-body {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .card-footer {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #718096;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+        
+        .badge-priority-high {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        
+        .badge-priority-medium {
+            background: #feebc8;
+            color: #c05621;
+        }
+        
+        .badge-priority-low {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .badge-overdue {
+            background: #fc8181;
+            color: white;
+        }
+        
+        .badge-upcoming {
+            background: #fbd38d;
+            color: #744210;
+        }
+        
+        .badge-done {
+            background: #9ae6b4;
+            color: #22543d;
+        }
+        
+        .habit-grid {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .habit-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .habit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .habit-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .habit-streak {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .habit-days {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            justify-content: space-between;
+        }
+        
+        .day-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .day-dot:active {
+            transform: scale(0.95);
+        }
+        
+        .day-dot.completed {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+        
+        .day-dot.today {
+            border: 3px solid #667eea;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .client-list {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 5px;
+        }
+        
+        .filter-bar::-webkit-scrollbar {
+            height: 0;
+        }
+        
+        .notification-banner {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .notification-banner .icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .notification-text {
+            flex: 1;
+            color: #2d3748;
+            font-size: 13px;
+            line-width: 1.4;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            color: #718096;
+            font-size: 11px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: all 0.2s;
+        }
+        
+        .bottom-nav-item.active {
+            color: #667eea;
+        }
+        
+        .bottom-nav-item .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+                padding-bottom: 20px;
+            }
+            
+            .container {
+                max-width: 1200px;
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+            
+            .tabs {
+                display: flex;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .habit-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+            
+            .client-list {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Management Hub</h1>
+            <p>Your personal & business command center</p>
+        </div>
+        
+        <div class="install-prompt" id="installPrompt">
+            <div style="flex: 1;">
+                <strong>📱 Install App</strong><br>
+                <span style="font-size: 12px; opacity: 0.9;">Add to home screen for the best experience!</span>
+            </div>
+            <button onclick="installApp()">Install</button>
+        </div>
+        
+        <!-- Desktop Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab" onclick="switchTab('habits')">✨ Habits</button>
+            <button class="tab" onclick="switchTab('clients')">👥 Clients</button>
+            <button class="tab" onclick="switchTab('tasks')">📋 Tasks</button>
+            <button class="tab" onclick="switchTab('reminders')">🔔 Reminders</button>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="section-title">📊 Your Overview</div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-habits">0</div>
+                    <div class="stat-label">Active Habits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-clients">0</div>
+                    <div class="stat-label">Active Clients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-tasks">0</div>
+                    <div class="stat-label">Pending Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-overdue">0</div>
+                    <div class="stat-label">Overdue Items</div>
+                </div>
+            </div>
+            
+            <div class="section-title">🚨 Today's Priorities</div>
+            <div id="today-overview"></div>
+        </div>
+        
+        <!-- Habits Tab -->
+        <div id="habits" class="tab-content">
+            <div class="section-title">✨ Habit Tracker</div>
+            
+            <div class="input-group">
+                <input type="text" id="habit-name" placeholder="Habit name (e.g., Morning workout)">
+                <select id="habit-frequency">
+                    <option value="daily">Daily</option>
+                    <option value="weekdays">Weekdays</option>
+                    <option value="weekends">Weekends</option>
+                </select>
+                <input type="time" id="habit-reminder-time" placeholder="Reminder time (optional)">
+                <button onclick="addHabit()">Add Habit</button>
+            </div>
+            
+            <div class="habit-grid" id="habits-container"></div>
+        </div>
+        
+        <!-- Clients Tab -->
+        <div id="clients" class="tab-content">
+            <div class="section-title">👥 Client Management</div>
+            
+            <div class="input-group">
+                <input type="text" id="client-name" placeholder="Client name">
+                <input type="text" id="client-company" placeholder="Company (optional)">
+                <input type="text" id="client-email" placeholder="Email (optional)">
+                <input type="text" id="client-phone" placeholder="Phone (optional)">
+                <button onclick="addClient()">Add Client</button>
+            </div>
+            
+            <div class="client-list" id="clients-container"></div>
+        </div>
+        
+        <!-- Tasks Tab -->
+        <div id="tasks" class="tab-content">
+            <div class="section-title">📋 Task Management</div>
+            
+            <div class="input-group">
+                <input type="text" id="task-title" placeholder="Task title">
+                <select id="task-client">
+                    <option value="">Select client (optional)</option>
+                </select>
+                <input type="date" id="task-deadline">
+                <select id="task-priority">
+                    <option value="low">Low Priority</option>
+                    <option value="medium" selected>Medium Priority</option>
+                    <option value="high">High Priority</option>
+                </select>
+                <button onclick="addTask()">Add Task</button>
+            </div>
+            
+            <div class="filter-bar">
+                <button class="btn-small" onclick="filterTasks('all')">All</button>
+                <button class="btn-small" onclick="filterTasks('today')">Today</button>
+                <button class="btn-small" onclick="filterTasks('week')">This Week</button>
+                <button class="btn-small btn-warning" onclick="filterTasks('overdue')">Overdue</button>
+                <button class="btn-small btn-success" onclick="filterTasks('completed')">Done</button>
+            </div>
+            
+            <div id="tasks-container"></div>
+        </div>
+        
+        <!-- Reminders Tab -->
+        <div id="reminders" class="tab-content">
+            <div class="section-title">🔔 Notifications</div>
+            
+            <div class="notification-banner">
+                <span class="icon">📱</span>
+                <div class="notification-text">
+                    <strong>Enable notifications</strong> to receive reminders even when the app is closed.
+                </div>
+            </div>
+            
+            <button onclick="requestNotificationPermission()" style="margin-bottom: 15px;">
+                🔔 Enable Notifications
+            </button>
+            
+            <div class="card">
+                <div class="card-title">Status</div>
+                <div class="card-body" id="notification-status">
+                    Checking notification status...
+                </div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 20px;">Upcoming Reminders</div>
+            <div id="reminders-list"></div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation (Mobile) -->
+    <div class="bottom-nav">
+        <button class="bottom-nav-item active" onclick="switchTab('dashboard')">
+            <div class="nav-icon">📊</div>
+            <div>Dashboard</div>
+        </button>
+        <button class="bottom-nav-item" onclick="switchTab('habits')">
+            <div class="nav-icon">✨</div>
+            <div>Habits</div>
+        </button>
+        <button class="bottom-nav-item" onclick="switchTab('clients')">
+            <div class="nav-icon">👥</div>
+            <div>Clients</div>
+        </button>
+        <button class="bottom-nav-item" onclick="switchTab('tasks')">
+            <div class="nav-icon">📋</div>
+            <div>Tasks</div>
+        </button>
+        <button class="bottom-nav-item" onclick="switchTab('reminders')">
+            <div class="nav-icon">🔔</div>
+            <div>Alerts</div>
+        </button>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
